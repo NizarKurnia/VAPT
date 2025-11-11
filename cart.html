@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cart — KebabKart</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">KebabKart</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="cart.html">Cart <span id="cart-count" class="badge">0</span></a>
+      <a href="orders.html">My Orders</a>
+      <a href="login.html" id="auth-link">Login</a>
+      <a href="profile.html" id="profile-link" style="display:none">Profile</a>
+    </nav>
+  </header>
+  <main class="container">
+    <h2>Your Cart</h2>
+    <div id="cart-list"></div>
+
+    <section class="checkout">
+      <label for="promo">Promo code</label>
+        <div>Promo: <b>KEBAB10</b> 10% off</div>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <input id="promo" placeholder="Enter promo code" style="flex:1;" />
+        <button id="apply-promo" class="btn-success">Apply</button>
+      </div>
+      <div id="applied-promo"></div>
+
+      <div class="card">
+        <div>Subtotal: $<span id="subtotal">0</span></div>
+        <div>Discount: $<span id="discount">0</span></div>
+        <div>Credit applied: $<span id="credit-applied">0</span></div>
+        <div><strong>Total to pay: $<span id="total">0</span></strong></div>
+      </div>
+
+      <button id="checkout-btn" class="btn" style="width:100%;margin-top:16px;">Checkout</button>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>&copy; KebabKart</small>
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script src="js/cart.js"></script>
+</body>
+
+</html>

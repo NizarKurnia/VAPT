@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>KebabKart — Home</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">KebabKart</a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="cart.html">Cart <span id="cart-count" class="badge">0</span></a>
+      <a href="orders.html">My Orders</a>
+      <a href="login.html" id="auth-link">Login</a>
+      <a href="profile.html" id="profile-link" style="display:none">Profile</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="promo-notification">
+      <p>First purchase? Use promo code <strong>FIRST10</strong> for <b>10%</b> discounts!</p>
+    </section>
+    <section class="search-area" style="margin-bottom:24px;display:flex;gap:12px;max-width:600px;">
+      <input id="search-input" placeholder="Search kebabs, toppings, price..." style="flex:1;" />
+      <button id="search-btn" class="btn">Search</button>
+    </section>
+
+    <section>
+      <h2>Menu</h2>
+      <div id="products" class="grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>&copy; KebabKart</small>
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script src="js/menu.js"></script>
+</body>
+</html>

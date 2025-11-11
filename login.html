@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login — KebabKart</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html">KebabKart</a>
+  </header>
+
+  <main class="container auth">
+    <h2>Login</h2>
+    <form id="login-form">
+      <label>Username<input name="username" required /></label>
+      <label>Password<input name="password" type="password" required /></label>
+      <button type="submit" class="btn" style="width:100%;">Log in</button>
+    </form>
+    <p>Don't have an account? <a href="register.html">Register</a></p>
+    <div id="msg" class="msg"></div>
+  </main>
+
+  <script src="js/common.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

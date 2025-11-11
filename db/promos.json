@@ -1,0 +1,10 @@
+{
+  "KEBAB10": {
+    "valid": true,
+    "discount": 0.1
+  },
+  "FIRST10": {
+    "valid": true,
+    "discount": 0.1
+  }
+}

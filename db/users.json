@@ -1,0 +1,32 @@
+[
+  {
+    "id": "USER-1762739814983",
+    "username": "1",
+    "password": "1",
+    "email": "1@example.invalid",
+    "joined": "2025-11-10T01:56:54.984Z",
+    "usedPromos": [
+      "KEBAB10",
+      "FIRST10",
+      "KEBAB10",
+      "FIRST10",
+      "KEBAB10",
+      "FIRST10",
+      "KEBAB10",
+      "FIRST10"
+    ],
+    "token": "cada4e87076053851bcef7bbd5547ea94e01e98f7d9a0334",
+    "photo": "/uploads/tes.php",
+    "storeCredit": 0
+  },
+  {
+    "id": "USER-1762741468142",
+    "username": "2",
+    "password": "2",
+    "email": "2@example.invalid",
+    "joined": "2025-11-10T02:24:28.142Z",
+    "usedPromos": [],
+    "token": "fe0399647d49c72d897ebd052b69563ecbc5c104f77767f4",
+    "photo": "/uploads/kucing.jpg"
+  }
+]
