@@ -1,4 +1,3 @@
-// Fetch and show user orders
 document.addEventListener('DOMContentLoaded', ()=> {
   const list = document.getElementById('orders-list');
   list.innerHTML = '<div class="card">Loading...</div>';
@@ -12,4 +11,4 @@ document.addEventListener('DOMContentLoaded', ()=> {
   });
 });
 
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'<').replace(/>/g,'>'); }

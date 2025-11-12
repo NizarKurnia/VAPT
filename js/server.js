@@ -1,41 +1,32 @@
-// server.js
-// require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 
 const app = express();
 
-
-// Built-in body parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Multer for file uploads - VULNERABLE CONFIGURATION
 const upload = multer({
   dest: 'uploads/',
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit (too high)
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
-    // NO FILE TYPE VALIDATION - allows any file type
     cb(null, true);
   }
 });
 
-// CORS (dev)
 app.use(cors({ origin: ['http://localhost:5500', 'http://127.0.0.1:5500'], credentials: true }));
-// app.use(cors({ origin: true, credentials: true })); // alternative dev: allow all
 
-// Simple request logger
 function logReq(req, res, next) {
   console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl} ${req.ip}`);
   next();
 }
 app.use(logReq);
 
-// Load data from files
 function loadData() {
   try {
     const usersData = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'db', 'users.json'), 'utf8'));
@@ -63,7 +54,6 @@ function loadData() {
   }
 }
 
-// Save data to files
 function saveData() {
   try {
     const usersArray = Object.values(users);
@@ -76,12 +66,10 @@ function saveData() {
   }
 }
 
-// Load data on startup
 loadData();
 
-// In-memory stores (dev only)
-const users = {};         // username -> { username, password, email, joined, token? }
-const tokens = {};        // token -> username
+const users = {};
+const tokens = {};
 let products = [
   { id: 'p1', name: 'Classic Kebab', desc: 'Beef, lettuce, tomato, sauce', price: 6.50, image: 'img/p1.jpg' },
   { id: 'p2', name: 'Spicy Lamb Kebab', desc: 'Lamb, spicy sauce, onions', price: 7.25, image: 'img/p2.jpg' },
@@ -92,19 +80,15 @@ let products = [
   { id: 'p7', name: 'Turkey Kebab', desc: 'Lean turkey, yogurt sauce, herbs', price: 6.25, image: 'img/p7.jpg' },
   { id: 'p8', name: 'Mixed Kebab', desc: 'Chicken, beef, lamb mix, special sauce', price: 9.00, image: 'img/p8.jpg' }
 ];
-const carts = {};         // username -> cart array
-const orders = {};        // username -> [ orders ]
+const carts = {};
+const orders = {};
 const promos = {
   'KEBAB10': { valid: true, discount: 0.10 },
   'FIRST10': { valid: true, discount: 0.10 }
 };
 
-
-
-// Helpers
 function makeToken() { return crypto.randomBytes(24).toString('hex'); }
 
-// Unified auth middleware
 function requireAuth(req, res, next) {
   const h = (req.headers['authorization'] || '').trim();
   const m = h.match(/^Bearer (.+)$/);
@@ -120,9 +104,6 @@ function requireAuth(req, res, next) {
   next();
 }
 
-// --- Endpoints ---
-
-// GET /api/products?q=...
 app.get('/api/products', (req, res) => {
   const q = (req.query.q || '').toLowerCase().trim();
   if (!q) return res.json(products);
@@ -134,7 +115,6 @@ app.get('/api/products', (req, res) => {
   res.json(filtered);
 });
 
-// POST /api/cart/save  -> { ok: true }
 app.post('/api/cart/save', (req, res) => {
   const token = (req.headers['authorization'] || '').replace('Bearer ', '').trim();
   const username = tokens[token];
@@ -148,7 +128,6 @@ app.post('/api/cart/save', (req, res) => {
   }
 });
 
-// POST /api/promo/verify
 app.post('/api/promo/verify', requireAuth, (req, res) => {
   const code = (req.body && (req.body.code || '')).toUpperCase();
   const p = promos[code];
@@ -158,7 +137,6 @@ app.post('/api/promo/verify', requireAuth, (req, res) => {
   res.json({ valid: true, code, discount: p.discount });
 });
 
-// POST /api/promo/apply
 app.post('/api/promo/apply', requireAuth, (req, res) => {
   const code = (req.body && (req.body.code || '')).toUpperCase();
   const p = promos[code];
@@ -174,8 +152,6 @@ app.post('/api/promo/apply', requireAuth, (req, res) => {
   res.json({ valid: true, code, discount: p.discount });
 });
 
-
-
 app.post('/api/orders', (req, res) => {
   const token = (req.headers['authorization'] || '').replace('Bearer ', '').trim();
   const username = tokens[token];
@@ -184,7 +160,6 @@ app.post('/api/orders', (req, res) => {
   const items = Array.isArray(req.body.items) ? req.body.items : [];
   const subtotal = items.reduce((s, i) => s + (Number(i.price || 0) * Number(i.qty || 1)), 0);
 
-  // promo / discount
   const promoCodes = Array.isArray(req.body.promo) ? req.body.promo : [];
   let discount = 0;
   for (const code of promoCodes) {
@@ -193,15 +168,12 @@ app.post('/api/orders', (req, res) => {
     }
   }
 
-  // total before credit
   let totalBeforeCredit = +(subtotal - discount).toFixed(2);
 
-  // determine available user credit
   let creditApplied = 0;
   if (username && users[username]) {
     const available = Number(users[username].storeCredit || 0);
     creditApplied = Math.min(available, totalBeforeCredit);
-    // apply
     totalBeforeCredit = +(totalBeforeCredit - creditApplied).toFixed(2);
     users[username].storeCredit = +(available - creditApplied).toFixed(2);
   }
@@ -227,25 +199,28 @@ app.post('/api/orders', (req, res) => {
   return res.status(201).json({ ok: true, orderId: id, order });
 });
 
-// GET /api/orders/mine
 app.get('/api/orders/mine', requireAuth, (req, res) => {
   const targetUser = req.query.user || req.username;
   res.json(orders[targetUser] || []);
 });
 
-// POST /api/auth/register
-app.post('/api/auth/register', (req, res) => {
+app.post('/api/auth/register', async (req, res) => {
   const username = (req.body && req.body.username || '').trim();
+  const email = (req.body && req.body.email || '').trim();
+  const address = (req.body && req.body.address || '').trim();
   const password = (req.body && req.body.password || '').trim();
-  if (!username || !password) return res.status(400).json({ message: 'username and password required' });
+  if (!username || !email || !address || !password) return res.status(400).json({ message: 'username, email, address, and password required' });
   if (users[username]) return res.status(400).json({ message: 'username taken' });
 
-  // NOTE: plain password for mock only
+  const saltRounds = 10;
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+
   const user = {
     id: 'USER-' + Date.now(),
     username,
-    password,
-    email: `${username}@example.invalid`,
+    password: hashedPassword,
+    email,
+    address,
     joined: new Date().toISOString(),
     usedPromos: []
   };
@@ -254,19 +229,21 @@ app.post('/api/auth/register', (req, res) => {
   return res.status(201).json({ ok: true });
 });
 
-// POST /api/auth/login
-app.post('/api/auth/login', (req, res) => {
+app.post('/api/auth/login', async (req, res) => {
   const username = (req.body && req.body.username || '').trim();
   const password = (req.body && req.body.password || '').trim();
   if (!username || !password) return res.status(400).json({ message: 'username and password required' });
 
   const user = users[username];
-  if (!user || user.password !== password) return res.status(401).json({ message: 'Invalid credentials' });
+  if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+
+  const isValidPassword = await bcrypt.compare(password, user.password);
+  if (!isValidPassword) return res.status(401).json({ message: 'Invalid credentials' });
 
   const token = makeToken();
   tokens[token] = username;
   user.token = token;
-  res.json({ token, user: { id: user.id, username: user.username, email: user.email, joined: user.joined } });
+  res.json({ token, user: { id: user.id, username: user.username, email: user.email, address: user.address, joined: user.joined } });
 });
 
 app.get('/api/auth/me', requireAuth, (req, res) => {
@@ -275,25 +252,25 @@ app.get('/api/auth/me', requireAuth, (req, res) => {
     id: u.id,
     username: u.username,
     email: u.email,
+    address: u.address,
     joined: u.joined,
     photo: u.photo,
     storeCredit: typeof u.storeCredit === 'number' ? +u.storeCredit.toFixed(2) : 0
   });
 });
 
-
-// PUT /api/auth/me  -> update username / password
-app.put('/api/auth/me', requireAuth, (req, res) => {
+app.put('/api/auth/me', requireAuth, async (req, res) => {
   const curUser = req.username;
   if (!curUser) return res.status(401).json({ message: 'not authenticated' });
 
   const payload = req.body || {};
   const newUsername = (payload.username || '').trim();
+  const newEmail = (payload.email || '').trim();
+  const newAddress = (payload.address || '').trim();
   const newPassword = (payload.password || '').trim();
 
-  if (!newUsername) return res.status(400).json({ message: 'username required' });
+  if (!newUsername || !newEmail || !newAddress) return res.status(400).json({ message: 'username, email, and address required' });
 
-  // if trying to change to an already-taken username
   if (newUsername !== curUser && users[newUsername]) {
     return res.status(400).json({ message: 'username already taken' });
   }
@@ -301,41 +278,38 @@ app.put('/api/auth/me', requireAuth, (req, res) => {
   const userObj = users[curUser];
   if (!userObj) return res.status(404).json({ message: 'user not found' });
 
-  // update fields
   userObj.username = newUsername;
-  if (newPassword) userObj.password = newPassword; // mock only
+  userObj.email = newEmail;
+  userObj.address = newAddress;
+  if (newPassword) {
+    const saltRounds = 10;
+    userObj.password = await bcrypt.hash(newPassword, saltRounds);
+  }
 
-  // if username changed, move user's keyed data and update tokens mapping
   if (newUsername !== curUser) {
-    // move user object
     users[newUsername] = userObj;
     delete users[curUser];
 
-    // move carts
     if (carts[curUser]) {
       carts[newUsername] = carts[curUser];
       delete carts[curUser];
     }
-    // move orders
     if (orders[curUser]) {
       orders[newUsername] = orders[curUser];
       delete orders[curUser];
     }
 
-    // update tokens map (token -> username)
     for (const t in tokens) {
       if (tokens[t] === curUser) tokens[t] = newUsername;
     }
   }
 
   saveData();
-  // respond without password
   const resp = Object.assign({}, userObj);
   delete resp.password;
   return res.status(200).json(resp);
 });
 
-// POST /api/auth/me/photo  -> upload profile photo (VULNERABLE)
 app.post('/api/auth/me/photo', requireAuth, upload.single('photo'), (req, res) => {
   const curUser = req.username;
   if (!curUser) return res.status(401).json({ message: 'not authenticated' });
@@ -343,14 +317,10 @@ app.post('/api/auth/me/photo', requireAuth, upload.single('photo'), (req, res) =
   const userObj = users[curUser];
   if (!userObj) return res.status(404).json({ message: 'user not found' });
 
-  // VULNERABLE: No file type validation, no filename sanitization
-  // Allows upload of any file type including malicious files
   if (req.file) {
-    // VULNERABLE: Original filename preserved, could contain path traversal
     const originalName = req.file.originalname;
     const newPath = path.join('uploads', originalName);
 
-    // VULNERABLE: Direct filesystem write without validation
     fs.renameSync(req.file.path, newPath);
 
     const photoPath = `/uploads/${originalName}`;
@@ -362,20 +332,16 @@ app.post('/api/auth/me/photo', requireAuth, upload.single('photo'), (req, res) =
   }
 });
 
-// Debug endpoints
 app.get('/api/debug/users', (req, res) => res.json(Object.keys(users)));
 app.get('/api/debug/orders', (req, res) => res.json(orders));
 
-// JSON parse error handler to avoid server crash on bad payload
 app.use((err, req, res, next) => {
   if (err && err.type === 'entity.parse.failed') return res.status(400).json({ message: 'Invalid JSON' });
   next(err);
 });
 
-// Serve uploaded files
 app.use('/uploads', express.static('uploads'));
 
-// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Mock API running on http://localhost:${PORT}`);

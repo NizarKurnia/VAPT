@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let cart = JSON.parse(localStorage.getItem('kk_cart') || '[]');
   let activePromos = JSON.parse(localStorage.getItem('kk_active_promos') || '[]');
 
-  // daftar promo lokal untuk discount calculation
   const promos = {
     'KEBAB10': { valid: true, discount: 0.10 },
     'FIRST10': { valid: true, discount: 0.10 },
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
   render();
   updatePromoList();
 
-  // ========== Render cart ==========
   function render() {
     if (!cart.length) {
       list.innerHTML = '<div class="card">Your cart is empty</div>';
@@ -33,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     list.innerHTML = cart.map((c, i) => `
       <div class="card">
         <h3>${escapeHtml(c.name)}</h3>
-        <div>Price: $${c.price.toFixed(2)} x 
+        <div>Price: $${c.price.toFixed(2)} x
           <input data-idx="${i}" class="qty" type="number" min="1" value="${c.qty}" style="width:60px" />
         </div>
         <div><button class="btn remove" data-idx="${i}">Remove</button></div>
@@ -44,7 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
     recalc();
   }
 
-  // ========== Tombol remove / qty ==========
   function attachBtns() {
     document.querySelectorAll('.remove').forEach(b => {
       b.addEventListener('click', () => {
@@ -66,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // ========== Hitung ulang total ==========
   function recalc() {
     const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
     let totalDiscount = 0;
@@ -83,7 +79,6 @@ document.addEventListener('DOMContentLoaded', () => {
     totalEl.textContent = (subtotal - totalDiscount).toFixed(2);
   }
 
-  // ========== Tambah kode promo ==========
   applyPromoBtn.addEventListener('click', async () => {
     const code = (promoInput.value || '').trim().toUpperCase();
     if (!code) {
@@ -91,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Call server to apply promo
     const res = await apiFetch('/promo/apply', { method: 'POST', body: JSON.stringify({ code }) });
     if (res.status !== 200 || !res.body.valid) {
       alert(res.body.message || 'Invalid promo');
@@ -105,7 +99,6 @@ document.addEventListener('DOMContentLoaded', () => {
     promoInput.value = '';
   });
 
-  // Allow applying promo by pressing Enter in the input field
   promoInput.addEventListener('keydown', async (event) => {
     if (event.key === 'Enter') {
       const code = (promoInput.value || '').trim().toUpperCase();
@@ -114,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Call server to apply promo
       const res = await apiFetch('/promo/apply', { method: 'POST', body: JSON.stringify({ code }) });
       if (res.status !== 200 || !res.body.valid) {
         alert(res.body.message || 'Invalid promo');
@@ -129,7 +121,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // tampilkan promo aktif
   function updatePromoList() {
     appliedPromoContainer.innerHTML = activePromos.map(code => {
       const promo = promos[code];
@@ -142,7 +133,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const order = { items: cart, promo: activePromos };
     const res = await apiFetch('/orders', { method: 'POST', body: JSON.stringify(order) });
     if (res.status === 201) {
-      // Clear cart both locally and server-side
       cart = [];
       activePromos = [];
       saveCart();
@@ -156,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function saveCart() {
     localStorage.setItem('kk_cart', JSON.stringify(cart));
-    // Save to server for persistence; non-blocking
     apiFetch('/cart/save', { method: 'POST', body: JSON.stringify({ cart }) });
     document.getElementById('cart-count').textContent = cart.length;
   }

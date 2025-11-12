@@ -26,12 +26,14 @@
         <div class="profile-left">
           <div id="profile-photo-container" style="text-align:center;">
             <img id="profile-photo" src="" alt="Profile Photo" style="width:100px; height:100px; border-radius:50%; object-fit:cover; display:none;" />
+            <div id="profile-photo-placeholder" style="width:100px; height:100px; border-radius:50%; background-color:#ccc; display:flex; align-items:center; justify-content:center; font-size:36px; color:#666;">👤</div>
           </div>
         </div>
         <div class="profile-right">
           <h3 id="profile-username">—</h3>
           <div>Joined: <span id="profile-joined">—</span></div>
           <div>Email: <span id="profile-email">—</span></div>
+          <div>Address: <span id="profile-address">—</span></div>
           <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;">
             <button id="edit-profile-btn" class="btn">Edit Profile</button>
             <button id="upload-photo-btn" class="btn-success">Upload Photo</button>
@@ -44,6 +46,12 @@
         <form id="profile-edit-form">
           <label>Username
             <input name="username" id="edit-username" required />
+          </label>
+          <label>Email
+            <input name="email" id="edit-email" type="email" required />
+          </label>
+          <label>Address
+            <input name="address" id="edit-address" required />
           </label>
           <label>New password
             <input name="password" id="edit-password" type="password" placeholder="Leave blank to keep current" />

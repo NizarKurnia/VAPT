@@ -1,4 +1,3 @@
-// Loads products and supports simple search; uses API to fetch products
 document.addEventListener('DOMContentLoaded', ()=> {
   const productsDiv = document.getElementById('products');
   const searchInput = document.getElementById('search-input');
@@ -21,7 +20,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
       return;
     }
     productsDiv.innerHTML = items.map(p => productCard(p, q)).join('');
-    // attach add-to-cart listeners
     document.querySelectorAll('.add-cart').forEach(btn=>{
       btn.addEventListener('click', e=>{
         const id = btn.dataset.id;
@@ -43,8 +41,8 @@ document.addEventListener('DOMContentLoaded', ()=> {
     </div>`;
   }
 
-  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
+  function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'<').replace(/>/g,'>'); }
+  function escapeAttr(s){ return String(s).replace(/"/g,'"'); }
 
   function addToCart(item){
     const raw = localStorage.getItem('kk_cart') || '[]';
@@ -54,7 +52,6 @@ document.addEventListener('DOMContentLoaded', ()=> {
     else cart.push(item);
     localStorage.setItem('kk_cart', JSON.stringify(cart));
     document.getElementById('cart-count').textContent = cart.length;
-    // Save cart to server
     apiFetch('/cart/save', { method: 'POST', body: JSON.stringify({ cart }) });
     alert('Added to cart');
   }
