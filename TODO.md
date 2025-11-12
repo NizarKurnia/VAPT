@@ -1,2 +1,0 @@
-- [ ] Make address optional in registration endpoint in js/server.js
-- [ ] Test registration after changes
