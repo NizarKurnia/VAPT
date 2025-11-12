@@ -209,7 +209,7 @@ app.post('/api/auth/register', async (req, res) => {
   const email = (req.body && req.body.email || '').trim();
   const address = (req.body && req.body.address || '').trim();
   const password = (req.body && req.body.password || '').trim();
-  if (!username || !email || !address || !password) return res.status(400).json({ message: 'username, email, address, and password required' });
+  if (!username || !email || !password) return res.status(400).json({ message: 'username, email, and password required' });
   if (users[username]) return res.status(400).json({ message: 'username taken' });
 
   const saltRounds = 10;
