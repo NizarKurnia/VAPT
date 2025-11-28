@@ -19,7 +19,7 @@ const upload = multer({
   }
 });
 
-app.use(cors({ origin: ['http://localhost:5500', 'http://127.0.0.1:5500'], credentials: true }));
+app.use(cors({ origin: true, credentials: true }));
 
 function logReq(req, res, next) {
   console.log(`${new Date().toISOString()} ${req.method} ${req.originalUrl} ${req.ip}`);
@@ -341,8 +341,9 @@ app.use((err, req, res, next) => {
 });
 
 app.use('/uploads', express.static('uploads'));
+app.use(express.static('.'));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Mock API running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Mock API running on http://0.0.0.0:${PORT}`);
 });

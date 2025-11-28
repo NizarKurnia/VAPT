@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const profilePhoto = document.getElementById('profile-photo');
         const profilePhotoPlaceholder = document.getElementById('profile-photo-placeholder');
         if (u.photo) {
-          profilePhoto.src = 'http://localhost:3000' + u.photo;
+          profilePhoto.src = window.location.origin + u.photo;
           profilePhoto.style.display = 'block';
           profilePhotoPlaceholder.style.display = 'none';
         } else {
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (res.status === 200) {
             showMsg(photoMsg, 'Photo uploaded');
             if (res.body.photo) {
-              profilePhoto.src = 'http://localhost:3000' + res.body.photo;
+              profilePhoto.src = window.location.origin + res.body.photo;
               profilePhoto.style.display = 'block';
               profilePhotoPlaceholder.style.display = 'none';
             }

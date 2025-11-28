@@ -1,21 +1,13 @@
 [
   {
-    "id": "USER-1762914712610",
-    "username": "1",
-    "password": "$2b$10$TyKoKA0m0dMefqAe8aq0Ju4mU9e8d0GKSiIFnn8iDqFFHDeTT6AFK",
-    "email": "1@gmail.com",
+    "id": "USER-1764297529920",
+    "username": "Gehu",
+    "password": "$2b$10$obixYq.SVK/NoJnOfF4j5uRwRwrxz5XQebRJmXr2MtGxm.RTQ9lxe",
+    "email": "gehu@gmail.com",
     "address": "",
-    "joined": "2025-11-12T02:31:52.610Z",
+    "joined": "2025-11-28T02:38:49.920Z",
     "usedPromos": [],
-    "token": "1948c8950fe51b6d94f9bc714538dedb2c8988ad1d2ac159"
-  },
-  {
-    "id": "USER-1762914737245",
-    "username": "2",
-    "password": "$2b$10$0xwye7FKmWUIkNCZ4mF4QOZuE/nlbEGEeycl9OccU.1rZygTamING",
-    "email": "2@gmail.com",
-    "address": "",
-    "joined": "2025-11-12T02:32:17.245Z",
-    "usedPromos": []
+    "token": "b2e22952814ab1c87a88c3cf42fb9afb91df4b0ff369541b",
+    "photo": "/uploads/duck.png"
   }
 ]
